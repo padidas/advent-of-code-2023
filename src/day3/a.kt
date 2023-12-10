@@ -12,67 +12,59 @@ fun main() {
     val input = readFile(3)
     val partNumbers = mutableListOf<Int>()
 
-    for ((i, line) in input.withIndex()) {
-        var p = 0
+    for ((lineIndex, line) in input.withIndex()) {
         var num = FoundNumber()
 
-        while (p <= line.length - 1) {
+        for ((charIndex, char) in line.withIndex()) {
 
-            val char1 = line[p]
-
-            if (char1.isDigit()) {
-                num.number += char1
-                num.indexes.add(p)
-                p++
+            if (char.isDigit()) {
+                num.number += char
+                num.indexes.add(charIndex)
                 continue
             }
 
-            if (!char1.isDigit()) {
+            if (!char.isDigit()) {
                 if (num.number == "") {
-                    p++
                     continue
                 } else { // check surrounding for symbols
 
                     val betrachteteNumber = num.number
 
-                    val firstIndex = if (num.indexes.first() - 1 >= 0) num.indexes.first() - 1 else 0
+                    val firstIndex = if (num.indexes.first() > 0) num.indexes.first() - 1 else 0
                     val lastIndex = if (num.indexes.last() == line.lastIndex) num.indexes.last() else num.indexes.last() + 1
+                    val hitZone = firstIndex..lastIndex
 
                     // check line above
-                    if (i != 0) {
-                        for (index in firstIndex..lastIndex) {
-                            val focusedChar = input[i - 1][index]
-                            if (!focusedChar.isDigit() && focusedChar != '.') {
+                    if (lineIndex != 0) {
+                        for (hitZoneIndex in hitZone) {
+                            val focusedChar = input[lineIndex - 1][hitZoneIndex]
+                            if (focusedChar.isSpecial())
                                 num.isPartNumber = true
-                            }
                         }
                     }
 
                     // check line below
-                    if (i != line.lastIndex) {
-                        for (index in firstIndex..lastIndex) {
-                            val focusedChar = input[i + 1][index]
-                            if (!focusedChar.isDigit() && focusedChar != '.') {
+                    if (lineIndex != line.lastIndex) {
+                        for (hitZoneIndex in hitZone) {
+                            val focusedChar = input[lineIndex + 1][hitZoneIndex]
+                            if (focusedChar.isSpecial())
                                 num.isPartNumber = true
-                            }
                         }
                     }
 
                     // check same line
-                    if (!line[firstIndex].isDigit() && line[firstIndex] != '.' || !line[lastIndex].isDigit() && line[lastIndex] != '.') {
+                    if (line[firstIndex].isSpecial() || line[lastIndex].isSpecial())
                         num.isPartNumber = true
-                    }
 
-                    if (num.isPartNumber) {
+                    if (num.isPartNumber)
                         partNumbers.add(num.number.toInt())
-                    }
 
-                    p++
                     num = FoundNumber()
                 }
             }
         }
     }
+
     println(partNumbers.sum())
 }
 
@@ -81,3 +73,15 @@ data class FoundNumber(
     val indexes: MutableList<Int> = mutableListOf(),
     var isPartNumber: Boolean = false
 )
+
+fun Char.isSpecial(): Boolean =
+    this == '-'
+    || this == '&'
+    || this == '/'
+    || this == '*'
+    || this == '@'
+    || this == '#'
+    || this == '%'
+    || this == '+'
+    || this == '$'
+    || this == '='
