@@ -2,7 +2,7 @@ package day1
 
 import readFile
 
-fun main() {
+fun a(): Int {
 
     val input = readFile(1)
 
@@ -20,5 +20,5 @@ fun main() {
     }
 
     val calibrationValuesSum = calibrationValues.sum()
-    println(calibrationValuesSum)
+    return calibrationValuesSum
 }

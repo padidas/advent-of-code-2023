@@ -1,7 +1,6 @@
 package day1
 
 import readFile
-import kotlin.system.measureTimeMillis
 
 class Pointers(var one: Int = 0, var two: Int = 0, var focus: String = "") {
     fun reset() {
@@ -11,49 +10,42 @@ class Pointers(var one: Int = 0, var two: Int = 0, var focus: String = "") {
     }
 }
 
-fun main() {
+fun b(): Int {
     val input = readFile(1)
 
-    val time = measureTimeMillis {
+    val calibrationValues = input.map { line ->
 
-        val calibrationValues = input.map { line ->
+        val matches = mutableListOf<Char>()
+        val p = Pointers()
 
-            val matches = mutableListOf<Char>()
-            val p = Pointers()
+        while (p.one <= line.length - 1) {
 
-            while (p.one <= line.length - 1) {
-
-                if (line[p.one].isDigit()) {
-                    matches.add(line[p.one])
-                    p.reset()
-                    continue
-                }
-
-                if (p.two == line.length || line[p.two].isDigit()) {
-                    p.reset()
-                    continue
-                }
-
-                p.focus += line[p.two]
-                p.two++
-
-                if (digitsMap.containsKey(p.focus)) {
-                    matches.add(digitsMap[p.focus]!!)
-                    p.reset()
-                }
+            if (line[p.one].isDigit()) {
+                matches.add(line[p.one])
+                p.reset()
+                continue
             }
 
-            val calibrationValue = "${matches.first()}${matches.last()}".toInt()
+            if (p.two == line.length || line[p.two].isDigit()) {
+                p.reset()
+                continue
+            }
 
-            return@map calibrationValue
+            p.focus += line[p.two]
+            p.two++
+
+            if (digitsMap.containsKey(p.focus)) {
+                matches.add(digitsMap[p.focus]!!)
+                p.reset()
+            }
         }
 
-        val calibrationValuesSum = calibrationValues.sum()
-        println(calibrationValuesSum)
+        return@map "${matches.first()}${matches.last()}".toInt()
     }
 
-    println(time)
+    return calibrationValues.sum()
 }
+
 
 val digitsMap = mapOf(
     "one" to '1',
